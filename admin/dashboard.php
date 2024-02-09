@@ -1,18 +1,5 @@
 <?php
-
-include '../components/connect.php';
-// Check if user is logged in, then assign user id and role to these variables
-if (isset($_SESSION['user_id']) && isset($_SESSION['user_role'])) {
-   $user_id = $_SESSION['user_id'];
-   $user_role = $_SESSION['user_role'];
-   $tutor_id = $_SESSION['tutor_id'];
-
-} else {
-   // If not logged in, empty variables
-   $user_id = '';
-   $user_role = '';
-   $tutor_id = '';
-}
+include '../components/admin_header.php';
 
 $select_contents = pg_prepare($conn, "select_contents_query", "SELECT * FROM content WHERE tutor_id = $1");
 pg_execute($conn, "select_contents_query", array($tutor_id));
@@ -30,6 +17,17 @@ $select_comments = pg_prepare($conn, "select_comments_query", "SELECT * FROM com
 pg_execute($conn, "select_comments_query", array($tutor_id));
 $total_comments = pg_num_rows($select_comments);
 
+// Prepare the SELECT statement
+$select_tutor = pg_prepare($conn, "select_tutor_query", "SELECT * FROM tutors WHERE tutor_id = $1");
+
+// Execute the prepared statement
+$select_tutor_result = pg_execute($conn, "select_tutor_query", array($tutor_id));
+
+// Check if there are any rows returned
+if (pg_num_rows($select_tutor_result) > 0) 
+   // Fetch the tutor information as an associative array
+   $fetch_tutor = pg_fetch_assoc($select_tutor_result);
+   // Now you can access the tutor information using $fetch_tutor array
 ?>
 
 <!DOCTYPE html>
@@ -49,7 +47,6 @@ $total_comments = pg_num_rows($select_comments);
 </head>
 <body>
 
-<?php include '../components/admin_header.php'; ?>
    
 <section class="dashboard">
 
@@ -58,43 +55,43 @@ $total_comments = pg_num_rows($select_comments);
    <div class="box-container">
 
       <div class="box">
-         <h3>welcome!</h3>
-         <p><?= $fetch_profile['name']; ?></p>
+         <h3>Welcome!</h3>
+         <p><?= $fetch_tutor['name']; ?></p>
          <a href="profile.php" class="btn">view profile</a>
       </div>
 
       <div class="box">
          <h3><?= $total_contents; ?></h3>
-         <p>total contents</p>
+         <p>Total Contents</p>
          <a href="add_content.php" class="btn">add new content</a>
       </div>
 
       <div class="box">
-         <h3><?= $total_playlists; ?></h3>
-         <p>total playlists</p>
-         <a href="add_playlist.php" class="btn">add new playlist</a>
+         <h3><?= $total_courses; ?></h3>
+         <p>Total Courses</p>
+         <a href="add_playlist.php" class="btn">add new course</a>
       </div>
 
       <div class="box">
          <h3><?= $total_likes; ?></h3>
-         <p>total likes</p>
+         <p>Total Likes</p>
          <a href="contents.php" class="btn">view contents</a>
       </div>
 
       <div class="box">
          <h3><?= $total_comments; ?></h3>
-         <p>total comments</p>
+         <p>Total Comments</p>
          <a href="comments.php" class="btn">view comments</a>
       </div>
 
-      <div class="box">
+      <!-- <div class="box">
          <h3>quick select</h3>
          <p>login or register</p>
          <div class="flex-btn">
             <a href="login.php" class="option-btn">login</a>
             <a href="register.php" class="option-btn">register</a>
          </div>
-      </div>
+      </div> -->
 
    </div>
 
@@ -102,19 +99,6 @@ $total_comments = pg_num_rows($select_comments);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-<?php include '../components/footer.php'; ?>
 
 <script src="../js/admin_script.js"></script>
 

@@ -1,14 +1,3 @@
-<?php
-
-
-if(isset($_COOKIE['user_id'])){
-   $user_id = $_COOKIE['user_id'];
-}else{
-   $user_id = '';
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,6 +15,7 @@ if(isset($_COOKIE['user_id'])){
    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
 </head>
 <body>
+
 
 <?php include 'components/user_header.php'; ?>
 
@@ -49,27 +39,28 @@ if(isset($_COOKIE['user_id'])){
       </div> -->
 
       <?php
+         // Prepare statements for counting courses, contents, likes, and comments
+         $count_courses_query = pg_prepare($conn, "count_courses_query", 'SELECT * FROM courses WHERE tutor_id = $1');
+         $count_contents_query = pg_prepare($conn, "count_contents_query", 'SELECT * FROM content WHERE tutor_id = $1');
+         $count_likes_query = pg_prepare($conn, "count_likes_query", 'SELECT * FROM likes WHERE tutor_id = $1');
+         $count_comments_query = pg_prepare($conn, "count_comments_query", 'SELECT * FROM comments WHERE tutor_id = $1');
+
          $select_tutors = pg_prepare($conn, "select_tutors_query", 'SELECT * FROM tutors');
          $select_tutors_result = pg_execute($conn, "select_tutors_query", array());
             
-         if (pg_num_rows($select_tutors_result) > 0) {
+         if ($select_tutors_result) {
             while ($fetch_tutor = pg_fetch_assoc($select_tutors_result)) {
-               $tutor_id = $fetch_tutor['tutor_id'];
-
-               $count_playlists = pg_prepare($conn, "count_courses_query", 'SELECT * FROM courses WHERE tutor_id = $1');
-               $count_playlists_result = pg_execute($conn, "count_courses_query", array($tutor_id));
+               // Execute the prepared statements inside the loop
+               $count_playlists_result = pg_execute($conn, "count_courses_query", array($fetch_tutor['tutor_id']));
                $total_playlists = pg_num_rows($count_playlists_result);
-
-               $count_contents = pg_prepare($conn, "count_contents_query", 'SELECT * FROM content WHERE tutor_id = $1');
-               $count_contents_result = pg_execute($conn, "count_contents_query", array($tutor_id));
+   
+               $count_contents_result = pg_execute($conn, "count_contents_query", array($fetch_tutor['tutor_id']));
                $total_contents = pg_num_rows($count_contents_result);
-
-               $count_likes = pg_prepare($conn, "count_likes_query", 'SELECT * FROM likes WHERE tutor_id = $1');
-               $count_likes_result = pg_execute($conn, "count_likes_query", array($tutor_id));
+   
+               $count_likes_result = pg_execute($conn, "count_likes_query", array($fetch_tutor['tutor_id']));
                $total_likes = pg_num_rows($count_likes_result);
-
-               $count_comments = pg_prepare($conn, "count_comments_query", 'SELECT * FROM comments WHERE tutor_id = $1');
-               $count_comments_result = pg_execute($conn, "count_comments_query", array($tutor_id));
+   
+               $count_comments_result = pg_execute($conn, "count_comments_query", array($fetch_tutor['tutor_id']));
                $total_comments = pg_num_rows($count_comments_result);
       ?>
       <div class="box">

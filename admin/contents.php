@@ -1,13 +1,6 @@
 <?php
 
-include '../components/connect.php';
-
-if(isset($_COOKIE['tutor_id'])){
-   $tutor_id = $_COOKIE['tutor_id'];
-}else{
-   $tutor_id = '';
-   header('location:login.php');
-}
+include '../components/admin_header.php';
 
 if(isset($_POST['delete_video'])){
    $delete_id = $_POST['video_id'];
@@ -55,7 +48,6 @@ if(isset($_POST['delete_video'])){
 </head>
 <body>
 
-<?php include '../components/admin_header.php'; ?>
    
 <section class="contents">
 
@@ -63,17 +55,17 @@ if(isset($_POST['delete_video'])){
 
    <div class="box-container">
 
-   <div class="box" style="text-align: center;">
+   <!-- <div class="box" style="text-align: center;">
       <h3 class="title" style="margin-bottom: .5rem;">create new content</h3>
       <a href="add_content.php" class="btn">add content</a>
-   </div>
+   </div> -->
 
    <?php
-      $select_videos = $conn->prepare("SELECT * FROM `content` WHERE tutor_id = ? ORDER BY date DESC");
-      $select_videos->execute([$tutor_id]);
-      if($select_videos->rowCount() > 0){
-         while($fecth_videos = $select_videos->fetch(PDO::FETCH_ASSOC)){ 
-            $video_id = $fecth_videos['id'];
+      $select_videos = pg_prepare($conn, "select_videos_query", "SELECT * FROM content WHERE tutor_id = $1 ORDER BY date DESC");
+      pg_execute($conn, "select_videos_query", array($tutor_id));
+      if (pg_num_rows($select_videos) > 0) {
+         while ($fecth_videos = pg_fetch_assoc($select_videos)) {
+            $video_id = $fecth_videos['content_id'];
    ?>
       <div class="box">
          <div class="flex">
@@ -92,7 +84,7 @@ if(isset($_POST['delete_video'])){
    <?php
          }
       }else{
-         echo '<p class="empty">no contents added yet!</p>';
+         echo '<p class="empty">No contents added yet!</p>';
       }
    ?>
 
@@ -100,21 +92,6 @@ if(isset($_POST['delete_video'])){
 
 </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<?php include '../components/footer.php'; ?>
 
 <script src="../js/admin_script.js"></script>
 

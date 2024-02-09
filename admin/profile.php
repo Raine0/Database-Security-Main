@@ -1,29 +1,26 @@
 <?php
 
-   include '../components/connect.php';
+include '../components/admin_header.php';
 
-   if(isset($_COOKIE['tutor_id'])){
-      $tutor_id = $_COOKIE['tutor_id'];
-   }else{
-      $tutor_id = '';
-      header('location:login.php');
-   }
+// Prepare and execute query to get the total number of courses for the tutor
+$select_courses = pg_prepare($conn, "select_courses_query", "SELECT * FROM courses WHERE tutor_id = $1");
+pg_execute($conn, "select_courses_query", array($tutor_id));
+$total_courses = pg_num_rows($select_courses);
 
-   $select_playlists = $conn->prepare("SELECT * FROM `playlist` WHERE tutor_id = ?");
-   $select_playlists->execute([$tutor_id]);
-   $total_playlists = $select_playlists->rowCount();
+// Prepare and execute query to get the total number of contents for the tutor
+$select_contents = pg_prepare($conn, "select_contents_query", "SELECT * FROM content WHERE tutor_id = $1");
+pg_execute($conn, "select_contents_query", array($tutor_id));
+$total_contents = pg_num_rows($select_contents);
 
-   $select_contents = $conn->prepare("SELECT * FROM `content` WHERE tutor_id = ?");
-   $select_contents->execute([$tutor_id]);
-   $total_contents = $select_contents->rowCount();
+// Prepare and execute query to get the total number of likes for the tutor
+$select_likes = pg_prepare($conn, "select_likes_query", "SELECT * FROM likes WHERE tutor_id = $1");
+pg_execute($conn, "select_likes_query", array($tutor_id));
+$total_likes = pg_num_rows($select_likes);
 
-   $select_likes = $conn->prepare("SELECT * FROM `likes` WHERE tutor_id = ?");
-   $select_likes->execute([$tutor_id]);
-   $total_likes = $select_likes->rowCount();
-
-   $select_comments = $conn->prepare("SELECT * FROM `comments` WHERE tutor_id = ?");
-   $select_comments->execute([$tutor_id]);
-   $total_comments = $select_comments->rowCount();
+// Prepare and execute query to get the total number of comments for the tutor
+$select_comments = pg_prepare($conn, "select_comments_query", "SELECT * FROM comments WHERE tutor_id = $1");
+pg_execute($conn, "select_comments_query", array($tutor_id));
+$total_comments = pg_num_rows($select_comments);
 
 ?>
 
@@ -44,7 +41,6 @@
 </head>
 <body>
 
-<?php include '../components/admin_header.php'; ?>
    
 <section class="tutor-profile" style="min-height: calc(100vh - 19rem);"> 
 
@@ -59,23 +55,23 @@
       </div>
       <div class="flex">
          <div class="box">
-            <span><?= $total_playlists; ?></span>
-            <p>total playlists</p>
-            <a href="playlists.php" class="btn">view playlists</a>
+            <span><?= $total_courses; ?></span>
+            <p>Total Courses</p>
+            <a href="playlists.php" class="btn">view Courses</a>
          </div>
          <div class="box">
             <span><?= $total_contents; ?></span>
-            <p>total videos</p>
+            <p>Total Videos</p>
             <a href="contents.php" class="btn">view contents</a>
          </div>
          <div class="box">
             <span><?= $total_likes; ?></span>
-            <p>total likes</p>
-            <a href="contents.php" class="btn">view contents</a>
+            <p>Total Likes</p>
+            <a href="contents.php" class="btn">view Likes</a>
          </div>
          <div class="box">
             <span><?= $total_comments; ?></span>
-            <p>total comments</p>
+            <p>Total Comments</p>
             <a href="comments.php" class="btn">view comments</a>
          </div>
       </div>
@@ -83,21 +79,6 @@
 
 </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<?php include '../components/footer.php'; ?>
 
 <script src="../js/admin_script.js"></script>
 

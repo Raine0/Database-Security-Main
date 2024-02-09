@@ -23,7 +23,7 @@ if(isset($_POST['submit'])){
    if (!empty($name)) {
       $update_name = pg_prepare($conn, "update_name_query", "UPDATE students SET name = $1 WHERE student_id = $2");
       pg_execute($conn, "update_name_query", array($name, $student_id));
-      $message[] = 'Username updated successfully!';
+      $message[] = 'Name updated successfully!';
    }
 
    $email = $_POST['email'];

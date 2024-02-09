@@ -157,7 +157,7 @@ $total_bookmarked = pg_num_rows($select_bookmark_result);
    </div>
 
    <div class="more-btn">
-      <a href="courses.php" class="inline-option-btn">view more</a>
+      <a href="courses.php" class="inline-option-btn">View All Courses</a>
    </div>
 
 </section>

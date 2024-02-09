@@ -1,13 +1,6 @@
 <?php
+include '../components/admin_header.php';
 
-include '../components/connect.php';
-
-if(isset($_COOKIE['tutor_id'])){
-   $tutor_id = $_COOKIE['tutor_id'];
-}else{
-   $tutor_id = '';
-   header('location:login.php');
-}
 
 if(isset($_POST['submit'])){
 
@@ -18,8 +11,8 @@ if(isset($_POST['submit'])){
    $title = filter_var($title, FILTER_SANITIZE_STRING);
    $description = $_POST['description'];
    $description = filter_var($description, FILTER_SANITIZE_STRING);
-   $playlist = $_POST['playlist'];
-   $playlist = filter_var($playlist, FILTER_SANITIZE_STRING);
+   $course = $_POST['course'];
+   $course = filter_var($course, FILTER_SANITIZE_STRING);
 
    $thumb = $_FILES['thumb']['name'];
    $thumb = filter_var($thumb, FILTER_SANITIZE_STRING);
@@ -36,16 +29,26 @@ if(isset($_POST['submit'])){
    $video_tmp_name = $_FILES['video']['tmp_name'];
    $video_folder = '../uploaded_files/'.$rename_video;
 
-   if($thumb_size > 2000000){
+   // if($thumb_size > 2000000){
+   //    $message[] = 'image size is too large!';
+   // }else{
+   //    $add_playlist = $conn->prepare("INSERT INTO `content`(id, tutor_id, playlist_id, title, description, video, thumb, status) VALUES(?,?,?,?,?,?,?,?)");
+   //    $add_playlist->execute([$id, $tutor_id, $playlist, $title, $description, $rename_video, $rename_thumb, $status]);
+   //    move_uploaded_file($thumb_tmp_name, $thumb_folder);
+   //    move_uploaded_file($video_tmp_name, $video_folder);
+   //    $message[] = 'new course uploaded!';
+   // }
+
+   if ($thumb_size > 2000000) {
       $message[] = 'image size is too large!';
-   }else{
-      $add_playlist = $conn->prepare("INSERT INTO `content`(id, tutor_id, playlist_id, title, description, video, thumb, status) VALUES(?,?,?,?,?,?,?,?)");
-      $add_playlist->execute([$id, $tutor_id, $playlist, $title, $description, $rename_video, $rename_thumb, $status]);
+   } else {
+      $add_content = pg_prepare($conn, "add_content_query", "INSERT INTO content(content_id, tutor_id, course_id, title, description, video, thumb, status) VALUES($1, $2, $3, $4, $5, $6, $7, $8)");
+      pg_execute($conn, "add_content_query", array($id, $tutor_id, $course, $title, $description, $rename_video, $rename_thumb, $status));
       move_uploaded_file($thumb_tmp_name, $thumb_folder);
       move_uploaded_file($video_tmp_name, $video_folder);
-      $message[] = 'new course uploaded!';
+      $message[] = 'New course uploaded!';
    }
-
+   
    
 
 }
@@ -68,8 +71,6 @@ if(isset($_POST['submit'])){
 
 </head>
 <body>
-
-<?php include '../components/admin_header.php'; ?>
    
 <section class="video-form">
 
@@ -90,18 +91,18 @@ if(isset($_POST['submit'])){
       <select name="playlist" class="box" required>
          <option value="" disabled selected>--select playlist</option>
          <?php
-         $select_playlists = $conn->prepare("SELECT * FROM `playlist` WHERE tutor_id = ?");
-         $select_playlists->execute([$tutor_id]);
-         if($select_playlists->rowCount() > 0){
-            while($fetch_playlist = $select_playlists->fetch(PDO::FETCH_ASSOC)){
+         $select_courses = pg_prepare($conn, "select_courses_query", "SELECT * FROM courses WHERE tutor_id = $1");
+         pg_execute($conn, "select_courses_query", array($tutor_id));
+         if (pg_num_rows($select_courses_result) > 0) {
+             while ($fetch_course = pg_fetch_assoc($select_courses_result)) {
          ?>
-         <option value="<?= $fetch_playlist['id']; ?>"><?= $fetch_playlist['title']; ?></option>
+         <option value="<?= $fetch_course['course_id']; ?>"><?= $fetch_course['title']; ?></option>
          <?php
-            }
+             }
          ?>
          <?php
-         }else{
-            echo '<option value="" disabled>no playlist created yet!</option>';
+         } else {
+             echo '<option value="" disabled>No courses created yet!</option>';
          }
          ?>
       </select>
@@ -114,21 +115,6 @@ if(isset($_POST['submit'])){
 
 </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<?php include '../components/footer.php'; ?>
 
 <script src="../js/admin_script.js"></script>
 

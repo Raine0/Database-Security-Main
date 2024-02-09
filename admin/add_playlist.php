@@ -1,13 +1,5 @@
 <?php
-
-include '../components/connect.php';
-
-if(isset($_COOKIE['tutor_id'])){
-   $tutor_id = $_COOKIE['tutor_id'];
-}else{
-   $tutor_id = '';
-   header('location:login.php');
-}
+include '../components/admin_header.php';
 
 if(isset($_POST['submit'])){
 
@@ -27,13 +19,12 @@ if(isset($_POST['submit'])){
    $image_tmp_name = $_FILES['image']['tmp_name'];
    $image_folder = '../uploaded_files/'.$rename;
 
-   $add_playlist = $conn->prepare("INSERT INTO `playlist`(id, tutor_id, title, description, thumb, status) VALUES(?,?,?,?,?,?)");
-   $add_playlist->execute([$id, $tutor_id, $title, $description, $rename, $status]);
-
+   $add_course = pg_prepare($conn, "add_course_query", "INSERT INTO courses(course_id, tutor_id, title, description, thumbnail, status) VALUES($1, $2, $3, $4, $5, $6)");
+   pg_execute($conn, "add_course_query", array($id, $tutor_id, $title, $description, $rename, $status));
+   
    move_uploaded_file($image_tmp_name, $image_folder);
-
-   $message[] = 'new playlist created!';  
-
+   
+   $message[] = 'New course created!';   
 }
 
 ?>
@@ -54,8 +45,6 @@ if(isset($_POST['submit'])){
 
 </head>
 <body>
-
-<?php include '../components/admin_header.php'; ?>
    
 <section class="playlist-form">
 
@@ -79,21 +68,6 @@ if(isset($_POST['submit'])){
 
 </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<?php include '../components/footer.php'; ?>
 
 <script src="../js/admin_script.js"></script>
 

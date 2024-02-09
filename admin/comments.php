@@ -1,30 +1,29 @@
 <?php
+include '../components/admin_header.php';
 
-include '../components/connect.php';
-
-if(isset($_COOKIE['tutor_id'])){
-   $tutor_id = $_COOKIE['tutor_id'];
-}else{
-   $tutor_id = '';
+if ($tutor_id = ''){
    header('location:login.php');
 }
 
 if(isset($_POST['delete_comment'])){
-
    $delete_id = $_POST['comment_id'];
    $delete_id = filter_var($delete_id, FILTER_SANITIZE_STRING);
 
-   $verify_comment = $conn->prepare("SELECT * FROM `comments` WHERE id = ?");
-   $verify_comment->execute([$delete_id]);
+   // Prepare the SELECT statement to verify the existence of the comment
+   $verify_comment = pg_prepare($conn, "verify_comment_query", "SELECT * FROM comments WHERE comment_id = $1");
+   // Execute the prepared statement
+   $verify_comment_result = pg_execute($conn, "verify_comment_query", array($delete_id));
 
-   if($verify_comment->rowCount() > 0){
-      $delete_comment = $conn->prepare("DELETE FROM `comments` WHERE id = ?");
-      $delete_comment->execute([$delete_id]);
-      $message[] = 'comment deleted successfully!';
+   // Check if the comment exists
+   if(pg_num_rows($verify_comment_result) > 0){
+      // Prepare the DELETE statement to delete the comment
+      $delete_comment = pg_prepare($conn, "delete_comment_query", "DELETE FROM comments WHERE comment_id = $1");
+      // Execute the prepared statement to delete the comment
+      pg_execute($conn, "delete_comment_query", array($delete_id));
+      $message[] = 'Comment deleted successfully!';
    }else{
-      $message[] = 'comment already deleted!';
+      $message[] = 'Comment already deleted!';
    }
-
 }
 
 ?>
@@ -46,7 +45,6 @@ if(isset($_POST['delete_comment'])){
 </head>
 <body>
 
-<?php include '../components/admin_header.php'; ?>
    
 
 <section class="comments">
@@ -56,46 +54,32 @@ if(isset($_POST['delete_comment'])){
    
    <div class="show-comments">
       <?php
-         $select_comments = $conn->prepare("SELECT * FROM `comments` WHERE tutor_id = ?");
-         $select_comments->execute([$tutor_id]);
-         if($select_comments->rowCount() > 0){
-            while($fetch_comment = $select_comments->fetch(PDO::FETCH_ASSOC)){
-               $select_content = $conn->prepare("SELECT * FROM `content` WHERE id = ?");
-               $select_content->execute([$fetch_comment['content_id']]);
-               $fetch_content = $select_content->fetch(PDO::FETCH_ASSOC);
+         $select_comments = pg_prepare($conn, "select_comments_query", "SELECT * FROM comments WHERE tutor_id = $1");
+         pg_execute($conn, "select_comments_query", array($tutor_id));
+         if(pg_num_rows($select_comments) > 0){
+            while($fetch_comment = pg_fetch_assoc($select_comments)){
+               $select_content = pg_prepare($conn, "select_content_query", "SELECT * FROM content WHERE content_id = $1");
+               pg_execute($conn, "select_content_query", array($fetch_comment['content_id']));
+               $fetch_content = pg_fetch_assoc($select_content);
       ?>
       <div class="box" style="<?php if($fetch_comment['tutor_id'] == $tutor_id){echo 'order:-1;';} ?>">
          <div class="content"><span><?= $fetch_comment['date']; ?></span><p> - <?= $fetch_content['title']; ?> - </p><a href="view_content.php?get_id=<?= $fetch_content['id']; ?>">view content</a></div>
          <p class="text"><?= $fetch_comment['comment']; ?></p>
          <form action="" method="post">
-            <input type="hidden" name="comment_id" value="<?= $fetch_comment['id']; ?>">
+            <input type="hidden" name="comment_id" value="<?= $fetch_comment['comment_id']; ?>">
             <button type="submit" name="delete_comment" class="inline-delete-btn" onclick="return confirm('delete this comment?');">delete comment</button>
          </form>
       </div>
       <?php
        }
       }else{
-         echo '<p class="empty">no comments added yet!</p>';
+         echo '<p class="empty">No comments added yet!</p>';
       }
       ?>
       </div>
    
 </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-<?php include '../components/footer.php'; ?>
 
 <script src="../js/admin_script.js"></script>
 
