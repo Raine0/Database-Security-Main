@@ -11,7 +11,7 @@ if(isset($message)){
    }
 }
 
-include 'components/connect.php';
+include 'connect.php';
 
 // Check if user is logged in, then assign user id and role to these variables
 if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && isset($_SESSION['student_id'])) {
@@ -66,7 +66,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && isset($_SESS
 
             if ($fetch_profile) {
          ?>
-         <img src="uploaded_files/<?= $fetch_profile['image']; ?>" alt="">
+         <img src="../uploaded_files/<?= $fetch_profile['image']; ?>" alt="">
          <h3><?= $fetch_profile['name']; ?></h3>
          <span>Student</span>
          <a href="profile.php" class="btn">View Profile</a>
@@ -74,14 +74,14 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && isset($_SESS
             <a href="login.php" class="option-btn">login</a>
             <a href="register.php" class="option-btn">register</a>
          </div> -->
-         <a href="components/user_logout.php" onclick="return confirm('logout from this website?');" class="delete-btn">Logout</a>
+         <a href="../components/user_logout.php" onclick="return confirm('logout from this website?');" class="delete-btn">Logout</a>
          <?php
             }else{
          ?>
          <h3>Login or Register</h3>
           <div class="flex-btn">
-            <a href="login.php" class="option-btn">Login</a>
-            <a href="register.php" class="option-btn">Register</a>
+            <a href="../login.php" class="option-btn">Login</a>
+            <a href="../register.php" class="option-btn">Register</a>
          </div>
          <?php
             }
@@ -121,7 +121,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && isset($_SESS
 
             if ($fetch_profile) {
          ?>
-         <img src="uploaded_files/<?= $fetch_profile['image']; ?>" alt="">
+         <img src="../uploaded_files/<?= $fetch_profile['image']; ?>" alt="">
          <h3><?= $fetch_profile['name']; ?></h3>
          <span>Student</span>
          <a href="profile.php" class="btn">View Profile</a>

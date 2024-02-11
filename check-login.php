@@ -20,7 +20,7 @@ if(isset($_POST['submit'])){
         $_SESSION['user_id'] = $row['user_id'];
         $_SESSION['user_role'] = $row['role'];
         $_SESSION['student_id'] = $row['student_id'];
-        header('location:home.php');
+        header('location:student/home.php');
     } else {
         $message[] = 'Incorrect email or password!';
     }

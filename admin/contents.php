@@ -1,5 +1,23 @@
-<?php
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Dashboard</title>
 
+   <!-- font awesome cdn link  -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="../css/admin_style.css">
+
+   <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+</head>
+<body>
+
+   
+<?php
 include '../components/admin_header.php';
 
 if(isset($_POST['delete_video'])){
@@ -22,33 +40,14 @@ if(isset($_POST['delete_video'])){
       $delete_comments->execute([$delete_id]);
       $delete_content = $conn->prepare("DELETE FROM `content` WHERE id = ?");
       $delete_content->execute([$delete_id]);
-      $message[] = 'video deleted!';
+      $message[] = 'Video deleted!';
    }else{
-      $message[] = 'video already deleted!';
+      $message[] = 'Video already deleted!';
    }
-
 }
-
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-   <meta charset="UTF-8">
-   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Dashboard</title>
 
-   <!-- font awesome cdn link  -->
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-
-   <!-- custom css file link  -->
-   <link rel="stylesheet" href="../css/admin_style.css">
-
-</head>
-<body>
-
-   
 <section class="contents">
 
    <h1 class="heading">your contents</h1>
@@ -62,18 +61,19 @@ if(isset($_POST['delete_video'])){
 
    <?php
       $select_videos = pg_prepare($conn, "select_videos_query", "SELECT * FROM content WHERE tutor_id = $1 ORDER BY date DESC");
-      pg_execute($conn, "select_videos_query", array($tutor_id));
-      if (pg_num_rows($select_videos) > 0) {
-         while ($fecth_videos = pg_fetch_assoc($select_videos)) {
-            $video_id = $fecth_videos['content_id'];
+      $select_videos_result = pg_execute($conn, "select_videos_query", array($tutor_id));
+
+      if (pg_num_rows($select_videos_result) > 0) {
+         while ($fetch_videos = pg_fetch_assoc($select_videos_result)) {
+            $video_id = $fetch_videos['content_id'];
    ?>
       <div class="box">
          <div class="flex">
-            <div><i class="fas fa-dot-circle" style="<?php if($fecth_videos['status'] == 'active'){echo 'color:limegreen'; }else{echo 'color:red';} ?>"></i><span style="<?php if($fecth_videos['status'] == 'active'){echo 'color:limegreen'; }else{echo 'color:red';} ?>"><?= $fecth_videos['status']; ?></span></div>
-            <div><i class="fas fa-calendar"></i><span><?= $fecth_videos['date']; ?></span></div>
+            <div><i class="fas fa-dot-circle" style="<?php if($fetch_videos['status'] == 'Active'){echo 'color:limegreen'; }else{echo 'color:red';} ?>"></i><span style="<?php if($fetch_videos['status'] == 'Active'){echo 'color:limegreen'; }else{echo 'color:red';} ?>"><?= $fetch_videos['status']; ?></span></div>
+            <div><i class="fas fa-calendar"></i><span><?= $fetch_videos['date']; ?></span></div>
          </div>
-         <img src="../uploaded_files/<?= $fecth_videos['thumb']; ?>" class="thumb" alt="">
-         <h3 class="title"><?= $fecth_videos['title']; ?></h3>
+         <img src="../uploaded_files/<?= $fetch_videos['thumbnail']; ?>" class="thumb" alt="">
+         <h3 class="title"><?= $fetch_videos['title']; ?></h3>
          <form action="" method="post" class="flex-btn">
             <input type="hidden" name="video_id" value="<?= $video_id; ?>">
             <a href="update_content.php?get_id=<?= $video_id; ?>" class="option-btn">update</a>

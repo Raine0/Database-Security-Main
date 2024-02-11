@@ -1,3 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Courses</title>
+
+   <!-- font awesome cdn link  -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="../css/admin_style.css">
+
+   <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+</head>
+<body>
+
+
 <?php
 include '../components/admin_header.php';
 
@@ -14,10 +33,10 @@ if(isset($_POST['delete'])){
       $delete_course_thumb = pg_prepare($conn, "delete_course_thumb_query", "SELECT * FROM courses WHERE course_id = $1 LIMIT 1");
       $delete_course_thumb_result = pg_execute($conn, "delete_course_thumb_query", array($delete_id));
       $fetch_thumb = pg_fetch_assoc($delete_course_thumb_result);
-      unlink('../uploaded_files/'.$fetch_thumb['thumb']);
+      unlink('../uploaded_files/'.$fetch_thumb['thumbnail']);
       
       // Delete associated bookmarks
-      $delete_bookmark = pg_prepare($conn, "delete_bookmark_query", "DELETE FROM bookmark WHERE course_id = $1");
+      $delete_bookmark = pg_prepare($conn, "delete_bookmark_query", "DELETE FROM bookmarks WHERE course_id = $1");
       pg_execute($conn, "delete_bookmark_query", array($delete_id));
       
       // Delete the course
@@ -29,25 +48,7 @@ if(isset($_POST['delete'])){
       $message[] = 'Course already deleted!';
    }
 }
-
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-   <meta charset="UTF-8">
-   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Courses</title>
-
-   <!-- font awesome cdn link  -->
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-
-   <!-- custom css file link  -->
-   <link rel="stylesheet" href="../css/admin_style.css">
-
-</head>
-<body>
 
 
 <section class="playlists">
@@ -64,18 +65,19 @@ if(isset($_POST['delete'])){
       <?php
          $select_course = pg_prepare($conn, "select_course_query", "SELECT * FROM courses WHERE tutor_id = $1 ORDER BY date DESC");
          $select_course_result = pg_execute($conn, "select_course_query", array($tutor_id));
+
+         $count_videos = pg_prepare($conn, "count_videos_query", "SELECT COUNT(*) FROM content WHERE course_id = $1");
          if (pg_num_rows($select_course_result) > 0) {
             while ($fetch_course = pg_fetch_assoc($select_course_result)) {
                 $course_id = $fetch_course['course_id'];
         
                 // Counting videos
-                $count_videos = pg_prepare($conn, "count_videos_query", "SELECT COUNT(*) FROM content WHERE course_id = $1");
                 $count_videos_result = pg_execute($conn, "count_videos_query", array($course_id));
                 $total_videos = pg_fetch_result($count_videos_result, 0, 0);
       ?>
       <div class="box">
          <div class="flex">
-            <div><i class="fas fa-circle-dot" style="<?php if($fetch_course['status'] == 'active'){echo 'color:limegreen'; }else{echo 'color:red';} ?>"></i><span style="<?php if($fetch_course['status'] == 'active'){echo 'color:limegreen'; }else{echo 'color:red';} ?>"><?= $fetch_course['status']; ?></span></div>
+            <div><i class="fas fa-circle-dot" style="<?php if($fetch_course['status'] == 'Active'){echo 'color:limegreen'; }else{echo 'color:red';} ?>"></i><span style="<?php if($fetch_course['status'] == 'Active'){echo 'color:limegreen'; }else{echo 'color:red';} ?>"><?= $fetch_course['status']; ?></span></div>
             <div><i class="fas fa-calendar"></i><span><?= $fetch_course['date']; ?></span></div>
          </div>
          <div class="thumb">
@@ -85,7 +87,7 @@ if(isset($_POST['delete'])){
          <h3 class="title"><?= $fetch_course['title']; ?></h3>
          <p class="description"><?= $fetch_course['description']; ?></p>
          <form action="" method="post" class="flex-btn">
-            <input type="hidden" name="playlist_id" value="<?= $course_id; ?>">
+            <input type="hidden" name="course_id" value="<?= $course_id; ?>">
             <a href="update_playlist.php?get_id=<?= $course_id; ?>" class="option-btn">update</a>
             <input type="submit" value="delete" class="delete-btn" onclick="return confirm('delete this playlist?');" name="delete">
          </form>

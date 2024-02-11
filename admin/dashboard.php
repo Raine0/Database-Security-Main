@@ -1,35 +1,3 @@
-<?php
-include '../components/admin_header.php';
-
-$select_contents = pg_prepare($conn, "select_contents_query", "SELECT * FROM content WHERE tutor_id = $1");
-pg_execute($conn, "select_contents_query", array($tutor_id));
-$total_contents = pg_num_rows($select_contents);
-
-$select_courses = pg_prepare($conn, "select_courses_query", "SELECT * FROM courses WHERE tutor_id = $1");
-pg_execute($conn, "select_courses_query", array($tutor_id));
-$total_courses = pg_num_rows($select_courses);
-
-$select_likes = pg_prepare($conn, "select_likes_query", "SELECT * FROM likes WHERE tutor_id = $1");
-pg_execute($conn, "select_likes_query", array($tutor_id));
-$total_likes = pg_num_rows($select_likes);
-
-$select_comments = pg_prepare($conn, "select_comments_query", "SELECT * FROM comments WHERE tutor_id = $1");
-pg_execute($conn, "select_comments_query", array($tutor_id));
-$total_comments = pg_num_rows($select_comments);
-
-// Prepare the SELECT statement
-$select_tutor = pg_prepare($conn, "select_tutor_query", "SELECT * FROM tutors WHERE tutor_id = $1");
-
-// Execute the prepared statement
-$select_tutor_result = pg_execute($conn, "select_tutor_query", array($tutor_id));
-
-// Check if there are any rows returned
-if (pg_num_rows($select_tutor_result) > 0) 
-   // Fetch the tutor information as an associative array
-   $fetch_tutor = pg_fetch_assoc($select_tutor_result);
-   // Now you can access the tutor information using $fetch_tutor array
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,10 +12,43 @@ if (pg_num_rows($select_tutor_result) > 0)
    <!-- custom css file link  -->
    <link rel="stylesheet" href="../css/admin_style.css">
 
+   <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
 </head>
 <body>
 
-   
+
+<?php
+include '../components/admin_header.php';
+
+$select_contents = pg_prepare($conn, "select_contents_query", "SELECT * FROM content WHERE tutor_id = $1");
+pg_execute($conn, "select_contents_query", array($tutor_id));
+$total_contents = pg_num_rows($select_contents);
+
+$select_courses = pg_prepare($conn, "select_courses_query", "SELECT * FROM courses WHERE tutor_id = $1");
+$select_courses_result = pg_execute($conn, "select_courses_query", array($tutor_id));
+$total_courses = pg_num_rows($select_courses_result);
+
+$select_likes = pg_prepare($conn, "select_likes_query", "SELECT * FROM likes WHERE tutor_id = $1");
+$select_likes_result = pg_execute($conn, "select_likes_query", array($tutor_id));
+$total_likes = pg_num_rows($select_likes_result);
+
+$select_comments = pg_prepare($conn, "select_comments_query", "SELECT * FROM comments WHERE tutor_id = $1");
+$select_comments_result = pg_execute($conn, "select_comments_query", array($tutor_id));
+$total_comments = pg_num_rows($select_comments_result);
+
+// Prepare the SELECT statement
+$select_tutor = pg_prepare($conn, "select_tutor_query", "SELECT * FROM tutors WHERE tutor_id = $1");
+
+// Execute the prepared statement
+$select_tutor_result = pg_execute($conn, "select_tutor_query", array($tutor_id));
+
+// Check if there are any rows returned
+if (pg_num_rows($select_tutor_result) > 0) 
+   // Fetch the tutor information as an associative array
+   $fetch_tutor = pg_fetch_assoc($select_tutor_result);
+   // Now you can access the tutor information using $fetch_tutor array
+?>
+
 <section class="dashboard">
 
    <h1 class="heading">Dashboard</h1>

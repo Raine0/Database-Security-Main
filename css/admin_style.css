@@ -611,6 +611,7 @@ section{
    border-radius: .5rem;
    padding: 2rem;
    overflow-x:hidden;
+   /* height: 506px; */
 }
 
 .playlists .box-container .box .thumb{
@@ -667,10 +668,6 @@ section{
    line-height: 2;
    font-size: 1.7rem;
    color: var(--light-color);
-}
-
-.playlists .box-container .box .description::after{
-   content: '...';
 }
 
 .video-form form{
