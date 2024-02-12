@@ -21,8 +21,8 @@
 include '../components/admin_header.php';
 
 $select_contents = pg_prepare($conn, "select_contents_query", "SELECT * FROM content WHERE tutor_id = $1");
-pg_execute($conn, "select_contents_query", array($tutor_id));
-$total_contents = pg_num_rows($select_contents);
+$select_contents_result = pg_execute($conn, "select_contents_query", array($tutor_id));
+$total_contents = pg_num_rows($select_contents_result);
 
 $select_courses = pg_prepare($conn, "select_courses_query", "SELECT * FROM courses WHERE tutor_id = $1");
 $select_courses_result = pg_execute($conn, "select_courses_query", array($tutor_id));
