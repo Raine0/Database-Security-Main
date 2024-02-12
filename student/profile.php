@@ -4,7 +4,7 @@
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>profile</title>
+   <title>Profile</title>
 
    <!-- font awesome cdn link  -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
@@ -22,17 +22,17 @@ include '../components/user_header.php';
 
 // Select likes
 $select_likes = pg_prepare($conn, "select_likes_query", "SELECT * FROM likes WHERE student_id = $1");
-$result_likes = pg_execute($conn, "select_likes_query", array($user_id));
+$result_likes = pg_execute($conn, "select_likes_query", array($student_id));
 $total_likes = pg_num_rows($result_likes);
 
 // Select comments
 $select_comments = pg_prepare($conn, "select_comments_query", "SELECT * FROM comments WHERE student_id = $1");
-$result_comments = pg_execute($conn, "select_comments_query", array($user_id));
+$result_comments = pg_execute($conn, "select_comments_query", array($student_id));
 $total_comments = pg_num_rows($result_comments);
 
 // Select bookmarks
 $select_bookmark = pg_prepare($conn, "select_bookmark_query", "SELECT * FROM bookmarks WHERE student_id = $1");
-$result_bookmark = pg_execute($conn, "select_bookmark_query", array($user_id));
+$result_bookmark = pg_execute($conn, "select_bookmark_query", array($student_id));
 $total_bookmarked = pg_num_rows($result_bookmark);
 ?>
 

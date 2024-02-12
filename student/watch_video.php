@@ -27,8 +27,8 @@ if(isset($_POST['like_content'])){
          pg_execute($conn, "remove_likes_query", array($user_id, $content_id));
          $message[] = 'Removed from likes!';
       }else{
-         $insert_likes = pg_prepare($conn, "insert_likes_query", "INSERT INTO likes(user_id, tutor_id, content_id) VALUES($1, $2, $3)");
-         pg_execute($conn, "insert_likes_query", array($user_id, $tutor_id, $content_id));
+         $insert_likes = pg_prepare($conn, "insert_likes_query", "INSERT INTO likes(user_id, student_id, tutor_id, content_id) VALUES($1, $2, $3, $4)");
+         pg_execute($conn, "insert_likes_query", array($user_id, $student_id, $tutor_id, $content_id));
          $message[] = 'Added to likes!';
       }
    }else{
@@ -161,19 +161,19 @@ if(isset($_POST['edit_comment'])){
 <section class="watch-video">
 
    <?php
-      $select_content = pg_prepare($conn, "select_content_query", "SELECT * FROM content WHERE content_id = $1 AND status = $2");
-      $select_content_result = pg_execute($conn, "select_content_query", array($get_id, 'Active'));
+      $select_content = pg_prepare($conn, "select_content_query3", "SELECT * FROM content WHERE content_id = $1 AND status = $2");
+      $select_content_result = pg_execute($conn, "select_content_query3", array($get_id, 'Active'));
 
       if(pg_num_rows($select_content_result) > 0){
          while($fetch_content = pg_fetch_assoc($select_content_result)){
             $content_id = $fetch_content['content_id'];
 
-            $select_likes = pg_prepare($conn, "select_likes_query", "SELECT * FROM likes WHERE content_id = $1");
-            $select_likes_result = pg_execute($conn, "select_likes_query", array($content_id));
+            $select_likes = pg_prepare($conn, "select_likes_query1", "SELECT * FROM likes WHERE content_id = $1");
+            $select_likes_result = pg_execute($conn, "select_likes_query1", array($content_id));
             $total_likes = pg_num_rows($select_likes_result);  
 
             $verify_likes = pg_prepare($conn, "verify_likes_query", "SELECT * FROM likes WHERE user_id = $1 AND content_id = $2");
-            pg_execute($conn, "verify_likes_query", array($user_id, $content_id));
+            $verify_likes_result = pg_execute($conn, "verify_likes_query", array($user_id, $content_id));
 
             $select_tutor = pg_prepare($conn, "select_tutor_query", "SELECT * FROM tutors WHERE tutor_id = $1 LIMIT 1");
             $select_tutor_result = pg_execute($conn, "select_tutor_query", array($fetch_content['tutor_id']));
@@ -197,7 +197,7 @@ if(isset($_POST['edit_comment'])){
          <input type="hidden" name="content_id" value="<?= $content_id; ?>">
          <a href="course.php?get_id=<?= $fetch_content['course_id']; ?>" class="inline-btn">View Course</a>
          <?php
-            if (pg_num_rows($verify_likes) > 0) {
+            if (pg_num_rows($verify_likes_result) > 0) {
          ?>
          <button type="submit" name="like_content"><i class="fas fa-heart"></i><span>Liked</span></button>
          <?php
@@ -271,7 +271,7 @@ if(isset($_POST['edit_comment'])){
       <?php
        }
       }else{
-         echo '<p class="empty">No comments added yet!</p>';
+         echo '<p class="empty">No comments added yet.</p>';
       }
       ?>
       </div>

@@ -22,23 +22,15 @@
 <?php
 
 $select_likes = pg_prepare($conn, "select_likes_query", 'SELECT * FROM likes WHERE student_id = $1');
-$select_likes_result = pg_execute($conn, "select_likes_query", array($user_id));
+$select_likes_result = pg_execute($conn, "select_likes_query", array($student_id));
 $total_likes = pg_num_rows($select_likes_result);
 
-/* $select_comments = $conn->prepare("SELECT * FROM `comments` WHERE user_id = ?");
-$select_comments->execute([$user_id]);
-$total_comments = $select_comments->rowCount(); */
-
 $select_comments = pg_prepare($conn, "select_comments_query", 'SELECT * FROM comments WHERE student_id = $1');
-$select_comments_result = pg_execute($conn, "select_comments_query", array($user_id));
+$select_comments_result = pg_execute($conn, "select_comments_query", array($student_id));
 $total_comments = pg_num_rows($select_comments_result);
 
-/* $select_bookmark = $conn->prepare("SELECT * FROM `bookmark` WHERE user_id = ?");
-$select_bookmark->execute([$user_id]);
-$total_bookmarked = $select_bookmark->rowCount(); */
-
 $select_bookmark = pg_prepare($conn, "select_bookmark_query", 'SELECT * FROM bookmarks WHERE student_id = $1');
-$select_bookmark_result = pg_execute($conn, "select_bookmark_query", array($user_id));
+$select_bookmark_result = pg_execute($conn, "select_bookmark_query", array($student_id));
 $total_bookmarked = pg_num_rows($select_bookmark_result);
 
 ?>
@@ -61,7 +53,7 @@ $total_bookmarked = pg_num_rows($select_bookmark_result);
          <p>Total Comments : <span><?= $total_comments; ?></span></p>
          <a href="comments.php" class="inline-btn">view comments</a>
          <p>Saved Playlist : <span><?= $total_bookmarked; ?></span></p>
-         <a href="bookmark.php" class="inline-btn">view bookmark</a>
+         <a href="bookmark.php" class="inline-btn">view bookmarks</a>
       </div>
       <?php
          }else{ 

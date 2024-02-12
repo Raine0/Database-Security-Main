@@ -4,5 +4,5 @@
    session_unset();
    session_destroy();
 
-   header('location:../student/about.php');
+   header('location:../about.php');
 ?>

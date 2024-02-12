@@ -71,10 +71,10 @@
                <span><?= $fetch_tutor['profession']; ?></span>
             </div>
          </div>
-         <p>Playlists : <span><?= $total_playlists; ?></span></p>
-         <p>Total Videos : <span><?= $total_contents ?></span></p>
-         <p>Total Likes : <span><?= $total_likes ?></span></p>
-         <p>Total Comments : <span><?= $total_comments ?></span></p>
+         <p>Courses: <span><?= $total_playlists; ?></span></p>
+         <p>Videos Uploaded: <span><?= $total_contents ?></span></p>
+         <p>Likes: <span><?= $total_likes ?></span></p>
+         <p>Comments : <span><?= $total_comments ?></span></p>
          <form action="tutor_profile.php" method="post">
             <input type="hidden" name="tutor_email" value="<?= $fetch_tutor['email']; ?>">
             <input type="submit" value="view profile" name="tutor_fetch" class="inline-btn">

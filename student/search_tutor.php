@@ -1,15 +1,3 @@
-<?php
-
-include 'components/connect.php';
-
-if(isset($_COOKIE['user_id'])){
-   $user_id = $_COOKIE['user_id'];
-}else{
-   $user_id = '';
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,62 +10,62 @@ if(isset($_COOKIE['user_id'])){
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 
    <!-- custom css file link  -->
-   <link rel="stylesheet" href="css/style.css">
+   <link rel="stylesheet" href="../css/style.css">
 
 </head>
 <body>
 
-<?php include 'components/user_header.php'; ?>
+<?php include '../components/user_header.php'; ?>
 
 <section class="teachers">
 
-   <h1 class="heading">expert tutors</h1>
+   <h1 class="heading">Expert Tutors</h1>
 
    <form action="" method="post" class="search-tutor">
-      <input type="text" name="search_tutor" maxlength="100" placeholder="search tutor..." required>
+      <input type="text" name="search_tutor" maxlength="100" placeholder="Search Tutor" required>
       <button type="submit" name="search_tutor_btn" class="fas fa-search"></button>
    </form>
 
    <div class="box-container">
 
       <?php
-         if(isset($_POST['search_tutor']) or isset($_POST['search_tutor_btn'])){
+         if(isset($_POST['search_tutor']) || isset($_POST['search_tutor_btn'])) {
             $search_tutor = $_POST['search_tutor'];
-            $select_tutors = $conn->prepare("SELECT * FROM `tutors` WHERE name LIKE '%{$search_tutor}%'");
-            $select_tutors->execute();
-            if($select_tutors->rowCount() > 0){
-               while($fetch_tutor = $select_tutors->fetch(PDO::FETCH_ASSOC)){
+            $select_tutors = pg_prepare($conn, "select_tutors_query", "SELECT * FROM tutors WHERE name LIKE $1");
+            $select_tutors_result = pg_execute($conn, "select_tutors_query", array("%$search_tutor%"));
 
-                  $tutor_id = $fetch_tutor['id'];
+            if(pg_num_rows($select_tutors_result) > 0) {
+               while($fetch_tutor = pg_fetch_assoc($select_tutors_result)) {
+                  $tutor_id = $fetch_tutor['tutor_id'];
 
-                  $count_courses = $conn->prepare("SELECT * FROM `courses` WHERE tutor_id = ?");
-                  $count_courses->execute([$tutor_id]);
-                  $total_courses = $count_courses->rowCount();
+                  $count_courses = pg_prepare($conn, "count_courses_query", "SELECT * FROM courses WHERE tutor_id = $1");
+                  $count_courses_result = pg_execute($conn, "count_courses_query", array($tutor_id));
+                  $total_courses = pg_num_rows($count_courses_result);
 
-                  $count_contents = $conn->prepare("SELECT * FROM `content` WHERE tutor_id = ?");
-                  $count_contents->execute([$tutor_id]);
-                  $total_contents = $count_contents->rowCount();
+                  $count_contents = pg_prepare($conn, "count_contents_query", "SELECT * FROM content WHERE tutor_id = $1");
+                  $count_contents_result = pg_execute($conn, "count_contents_query", array($tutor_id));
+                  $total_contents = pg_num_rows($count_contents_result);
 
-                  $count_likes = $conn->prepare("SELECT * FROM `likes` WHERE tutor_id = ?");
-                  $count_likes->execute([$tutor_id]);
-                  $total_likes = $count_likes->rowCount();
+                  $count_likes = pg_prepare($conn, "count_likes_query", "SELECT * FROM likes WHERE tutor_id = $1");
+                  $count_likes_result = pg_execute($conn, "count_likes_query", array($tutor_id));
+                  $total_likes = pg_num_rows($count_likes_result);
 
-                  $count_comments = $conn->prepare("SELECT * FROM `comments` WHERE tutor_id = ?");
-                  $count_comments->execute([$tutor_id]);
-                  $total_comments = $count_comments->rowCount();
+                  $count_comments = pg_prepare($conn, "count_comments_query", "SELECT * FROM comments WHERE tutor_id = $1");
+                  $count_comments_result = pg_execute($conn, "count_comments_query", array($tutor_id));
+                  $total_comments = pg_num_rows($count_comments_result);
       ?>
       <div class="box">
          <div class="tutor">
-            <img src="uploaded_files/<?= $fetch_tutor['image']; ?>" alt="">
+            <img src="../uploaded_files/<?= $fetch_tutor['image']; ?>" alt="">
             <div>
                <h3><?= $fetch_tutor['name']; ?></h3>
                <span><?= $fetch_tutor['profession']; ?></span>
             </div>
          </div>
-         <p>playlists : <span><?= $total_playlists; ?></span></p>
-         <p>total videos : <span><?= $total_contents ?></span></p>
-         <p>total likes : <span><?= $total_likes ?></span></p>
-         <p>total comments : <span><?= $total_comments ?></span></p>
+         <p>Courses: <span><?= $total_courses; ?></span></p>
+         <p>Videos Uploaded: <span><?= $total_contents ?></span></p>
+         <p>Likes: <span><?= $total_likes ?></span></p>
+         <p>Comments: <span><?= $total_comments ?></span></p>
          <form action="tutor_profile.php" method="post">
             <input type="hidden" name="tutor_email" value="<?= $fetch_tutor['email']; ?>">
             <input type="submit" value="view profile" name="tutor_fetch" class="inline-btn">

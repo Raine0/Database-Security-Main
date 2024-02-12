@@ -14,17 +14,17 @@
 
    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
 </head>
-<body>
+<body class="login-page">
 
 
 
 <section class="form-container">
 
    <form action="check-login.php" method="post" enctype="multipart/form-data" class="login">
-      <h3>Welcome Back!</h3>
-      <p>Your Email <span>*</span></p>
+      <h3>LearnHub Login</h3>
+      <p>Email <span>*</span></p>
       <input type="email" name="email" placeholder="Enter Your Email" maxlength="50" required class="box">
-      <p>Your Password <span>*</span></p>
+      <p>Password <span>*</span></p>
       <input type="password" name="pass" placeholder="Enter Your Password" maxlength="20" required class="box">
       <p class="link">Don't have an account? <a href="register.php">Register Now</a></p>
       <input type="submit" name="submit" value="login now" class="btn">

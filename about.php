@@ -1,13 +1,3 @@
-<?php
-
-if(isset($_COOKIE['user_id'])){
-   $user_id = $_COOKIE['user_id'];
-}else{
-   $user_id = '';
-}
-// echo "$user_id";
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,13 +10,13 @@ if(isset($_COOKIE['user_id'])){
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 
    <!-- custom css file link  -->
-   <link rel="stylesheet" href="../css/style.css">
+   <link rel="stylesheet" href="css/style.css">
 
-   <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+   <link rel="icon" type="image/x-icon" href="images/favicon.ico">
 </head>
-<body>
+<body class="login-page">
 
-<?php include '../components/user_header.php'; ?>
+<?php include 'components/user_header.php'; ?>
 
 <!-- about section starts  -->
 
@@ -35,12 +25,12 @@ if(isset($_COOKIE['user_id'])){
    <div class="row">
 
       <div class="image">
-         <img src="../images/about-img.svg" alt="">
+         <img src="images/about-img.svg" alt="">
       </div>
 
       <div class="content">
          <h3>Why Choose Us?</h3>
-         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque nobis distinctio, nisi consequatur ad sequi, rem odit fugiat assumenda eligendi iure aut sunt ratione, tempore porro expedita quisquam.</p>
+         <p>Experience LearnHub: personalized learning, diverse courses, expert instruction, and interactive tools. Accessible anytime, anywhere, LearnHub empowers learners to thrive. Join us and unlock your potential.</p>
          <a href="courses.php" class="inline-btn">Our Courses</a>
       </div>
 
@@ -86,6 +76,51 @@ if(isset($_COOKIE['user_id'])){
 
 <!-- about section ends -->
 
+<!-- courses section starts  -->
+
+<section class="courses">
+
+   <h1 class="heading">Latest Courses</h1>
+
+   <div class="box-container">
+
+      <?php
+         $select_courses = pg_prepare($conn, "select_courses_query", 'SELECT * FROM courses WHERE status = $1 ORDER BY date DESC LIMIT 6');
+         $select_courses_result = pg_execute($conn, "select_courses_query", array('Active'));
+         
+         $select_tutor = pg_prepare($conn, "select_tutor_query", 'SELECT * FROM tutors WHERE tutor_id = $1');
+         if (pg_num_rows($select_courses_result) > 0) {
+             while ($fetch_course = pg_fetch_assoc($select_courses_result)) {
+                 $course_id = $fetch_course['course_id'];
+         
+                 $select_tutor_result = pg_execute($conn, "select_tutor_query", array($fetch_course['tutor_id']));
+                 $fetch_tutor = pg_fetch_assoc($select_tutor_result);
+      ?>
+      <div class="box">
+         <div class="tutor">
+            <img src="uploaded_files/<?= $fetch_tutor['image']; ?>" alt="">
+            <div>
+               <h3><?= $fetch_tutor['name']; ?></h3>
+               <span><?= $fetch_course['date']; ?></span>
+            </div>
+         </div>
+         <img src="uploaded_files/<?= $fetch_course['thumbnail']; ?>" class="thumb" alt="">
+         <h3 class="title"><?= $fetch_course['title']; ?></h3>
+         <a href="course.php?get_id=<?= $course_id; ?>" class="inline-btn">View Course</a>
+      </div>
+      <?php
+         }
+      }else{
+         echo '<p class="empty">No courses added yet!</p>';
+      }
+      ?>
+
+   </div>
+
+</section>
+
+<!-- courses section ends -->
+
 <!-- reviews section starts  -->
 
 <section class="reviews">
@@ -97,7 +132,7 @@ if(isset($_COOKIE['user_id'])){
       <div class="box">
          <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Illo fugiat, quaerat voluptate odio consectetur assumenda fugit maxime unde at ex?</p>
          <div class="user">
-            <img src="../images/pic-2.jpg" alt="">
+            <img src="images/pic-2.jpg" alt="">
             <div>
                <h3>john deo</h3>
                <div class="stars">
@@ -114,7 +149,7 @@ if(isset($_COOKIE['user_id'])){
       <div class="box">
          <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Illo fugiat, quaerat voluptate odio consectetur assumenda fugit maxime unde at ex?</p>
          <div class="user">
-            <img src="../images/pic-3.jpg" alt="">
+            <img src="images/pic-3.jpg" alt="">
             <div>
                <h3>john deo</h3>
                <div class="stars">
@@ -131,7 +166,7 @@ if(isset($_COOKIE['user_id'])){
       <div class="box">
          <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Illo fugiat, quaerat voluptate odio consectetur assumenda fugit maxime unde at ex?</p>
          <div class="user">
-            <img src="../images/pic-4.jpg" alt="">
+            <img src="images/pic-4.jpg" alt="">
             <div>
                <h3>john deo</h3>
                <div class="stars">
@@ -148,7 +183,7 @@ if(isset($_COOKIE['user_id'])){
       <div class="box">
          <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Illo fugiat, quaerat voluptate odio consectetur assumenda fugit maxime unde at ex?</p>
          <div class="user">
-            <img src="../images/pic-5.jpg" alt="">
+            <img src="images/pic-5.jpg" alt="">
             <div>
                <h3>john deo</h3>
                <div class="stars">
@@ -165,7 +200,7 @@ if(isset($_COOKIE['user_id'])){
       <div class="box">
          <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Illo fugiat, quaerat voluptate odio consectetur assumenda fugit maxime unde at ex?</p>
          <div class="user">
-            <img src="../images/pic-6.jpg" alt="">
+            <img src="images/pic-6.jpg" alt="">
             <div>
                <h3>john deo</h3>
                <div class="stars">
@@ -182,7 +217,7 @@ if(isset($_COOKIE['user_id'])){
       <div class="box">
          <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Illo fugiat, quaerat voluptate odio consectetur assumenda fugit maxime unde at ex?</p>
          <div class="user">
-            <img src="../images/pic-7.jpg" alt="">
+            <img src="images/pic-7.jpg" alt="">
             <div>
                <h3>john deo</h3>
                <div class="stars">
@@ -203,9 +238,8 @@ if(isset($_COOKIE['user_id'])){
 <!-- reviews section ends -->
 
 
-
 <!-- custom js file link  -->
-<script src="../js/script.js"></script>
+<script src="js/script.js"></script>
    
 </body>
 </html>

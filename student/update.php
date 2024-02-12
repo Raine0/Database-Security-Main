@@ -67,7 +67,7 @@ if(isset($_POST['submit'])){
    $rename = unique_id().'.'.$ext;
    $image_size = $_FILES['image']['size'];
    $image_tmp_name = $_FILES['image']['tmp_name'];
-   $image_folder = 'uploaded_files/'.$rename;
+   $image_folder = '../uploaded_files/'.$rename;
 
    if (!empty($image)) {
       if ($image_size > 2000000) {

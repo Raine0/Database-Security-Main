@@ -70,9 +70,9 @@ if (isset($_POST['submit'])) {
 
    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
 </head>
-<body>
+<body class="login-page">
 
-<?php include 'components/user_header.php'; ?>
+
 
 <section class="form-container">
 
@@ -81,15 +81,15 @@ if (isset($_POST['submit'])) {
       <div class="flex">
          <div class="col">
             <p>Full Name <span>*</span></p>
-            <input type="text" name="name" placeholder="enter your name" maxlength="50" required class="box">
+            <input type="text" name="name" placeholder="Enter your name" maxlength="50" required class="box">
             <p>Email <span>*</span></p>
-            <input type="email" name="email" placeholder="enter your email" maxlength="50" required class="box">
+            <input type="email" name="email" placeholder="Enter your email" maxlength="50" required class="box">
          </div>
          <div class="col">
             <p>Password <span>*</span></p>
-            <input type="password" name="pass" placeholder="enter your password" maxlength="20" required class="box">
+            <input type="password" name="pass" placeholder="Enter your password" maxlength="20" required class="box">
             <p>Confirm Password <span>*</span></p>
-            <input type="password" name="cpass" placeholder="confirm your password" maxlength="20" required class="box">
+            <input type="password" name="cpass" placeholder="Confirm your password" maxlength="20" required class="box">
          </div>
       </div>
       <p>Select Picture <span>*</span></p>
@@ -100,18 +100,6 @@ if (isset($_POST['submit'])) {
 
 </section>
 
-
-
-
-
-
-
-
-
-
-
-
-<?php include 'components/footer.php'; ?>
 
 <!-- custom js file link  -->
 <script src="js/script.js"></script>

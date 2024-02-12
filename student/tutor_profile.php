@@ -1,46 +1,3 @@
-<?php
-
-include 'components/connect.php';
-
-if(isset($_COOKIE['user_id'])){
-   $user_id = $_COOKIE['user_id'];
-}else{
-   $user_id = '';
-}
-
-if(isset($_POST['tutor_fetch'])){
-
-   $tutor_email = $_POST['tutor_email'];
-   $tutor_email = filter_var($tutor_email, FILTER_SANITIZE_STRING);
-   $select_tutor = $conn->prepare('SELECT * FROM `tutors` WHERE email = ?');
-   $select_tutor->execute([$tutor_email]);
-
-   $fetch_tutor = $select_tutor->fetch(PDO::FETCH_ASSOC);
-   $tutor_id = $fetch_tutor['id'];
-
-   $count_playlists = $conn->prepare("SELECT * FROM `playlist` WHERE tutor_id = ?");
-   $count_playlists->execute([$tutor_id]);
-   $total_playlists = $count_playlists->rowCount();
-
-   $count_contents = $conn->prepare("SELECT * FROM `content` WHERE tutor_id = ?");
-   $count_contents->execute([$tutor_id]);
-   $total_contents = $count_contents->rowCount();
-
-   $count_likes = $conn->prepare("SELECT * FROM `likes` WHERE tutor_id = ?");
-   $count_likes->execute([$tutor_id]);
-   $total_likes = $count_likes->rowCount();
-
-   $count_comments = $conn->prepare("SELECT * FROM `comments` WHERE tutor_id = ?");
-   $count_comments->execute([$tutor_id]);
-   $total_comments = $count_comments->rowCount();
-
-}else{
-   header('location:teachers.php');
-}
-
-?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,12 +10,47 @@ if(isset($_POST['tutor_fetch'])){
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 
    <!-- custom css file link  -->
-   <link rel="stylesheet" href="css/style.css">
+   <link rel="stylesheet" href="../css/style.css">
 
 </head>
 <body>
 
-<?php include 'components/user_header.php'; ?>
+<?php
+
+include '../components/user_header.php';
+
+if(isset($_POST['tutor_fetch'])) {
+   $tutor_email = $_POST['tutor_email'];
+   $tutor_email = filter_var($tutor_email, FILTER_SANITIZE_STRING);
+   
+   $select_tutor = pg_prepare($conn, "select_tutor_query", "SELECT * FROM tutors WHERE email = $1");
+   $select_tutor_result = pg_execute($conn, "select_tutor_query", array($tutor_email));
+   
+   $fetch_tutor = pg_fetch_assoc($select_tutor_result);
+   $tutor_id = $fetch_tutor['tutor_id'];
+
+   $count_courses = pg_prepare($conn, "count_courses_query", "SELECT * FROM courses WHERE tutor_id = $1");
+   $count_courses_result = pg_execute($conn, "count_courses_query", array($tutor_id));
+   $total_courses = pg_num_rows($count_courses_result);
+
+   $count_contents = pg_prepare($conn, "count_contents_query", "SELECT * FROM content WHERE tutor_id = $1");
+   $count_contents_result = pg_execute($conn, "count_contents_query", array($tutor_id));
+   $total_contents = pg_num_rows($count_contents_result);
+
+   $count_likes = pg_prepare($conn, "count_likes_query", "SELECT * FROM likes WHERE tutor_id = $1");
+   $count_likes_result = pg_execute($conn, "count_likes_query", array($tutor_id));
+   $total_likes = pg_num_rows($count_likes_result);
+
+   $count_comments = pg_prepare($conn, "count_comments_query", "SELECT * FROM comments WHERE tutor_id = $1");
+   $count_comments_result = pg_execute($conn, "count_comments_query", array($tutor_id));
+   $total_comments = pg_num_rows($count_comments_result);
+} else {
+   header('location:tutors.php');
+}
+
+
+?>
+
 
 <!-- teachers profile section starts  -->
 
@@ -68,15 +60,15 @@ if(isset($_POST['tutor_fetch'])){
 
    <div class="details">
       <div class="tutor">
-         <img src="uploaded_files/<?= $fetch_tutor['image']; ?>" alt="">
+         <img src="../uploaded_files/<?= $fetch_tutor['image']; ?>" alt="">
          <h3><?= $fetch_tutor['name']; ?></h3>
          <span><?= $fetch_tutor['profession']; ?></span>
       </div>
       <div class="flex">
-         <p>total playlists : <span><?= $total_playlists; ?></span></p>
-         <p>total videos : <span><?= $total_contents; ?></span></p>
-         <p>total likes : <span><?= $total_likes; ?></span></p>
-         <p>total comments : <span><?= $total_comments; ?></span></p>
+         <p>Courses: <span><?= $total_courses; ?></span></p>
+         <p>Videos: <span><?= $total_contents; ?></span></p>
+         <p>Likes : <span><?= $total_likes; ?></span></p>
+         <p>Comments : <span><?= $total_comments; ?></span></p>
       </div>
    </div>
 
@@ -86,37 +78,38 @@ if(isset($_POST['tutor_fetch'])){
 
 <section class="courses">
 
-   <h1 class="heading">latest courese</h1>
+   <h1 class="heading">Latest Courses</h1>
 
    <div class="box-container">
 
       <?php
-         $select_courses = $conn->prepare("SELECT * FROM `playlist` WHERE tutor_id = ? AND status = ?");
-         $select_courses->execute([$tutor_id, 'active']);
-         if($select_courses->rowCount() > 0){
-            while($fetch_course = $select_courses->fetch(PDO::FETCH_ASSOC)){
-               $course_id = $fetch_course['id'];
+         $select_courses = pg_prepare($conn, "select_courses_query", "SELECT * FROM courses WHERE tutor_id = $1 AND status = $2");
+         $select_courses_result = pg_execute($conn, "select_courses_query", array($tutor_id, 'Active'));
 
-               $select_tutor = $conn->prepare("SELECT * FROM `tutors` WHERE id = ?");
-               $select_tutor->execute([$fetch_course['tutor_id']]);
-               $fetch_tutor = $select_tutor->fetch(PDO::FETCH_ASSOC);
+         $select_tutor = pg_prepare($conn, "select_tutor_query1", "SELECT * FROM tutors WHERE tutor_id = $1");
+         if(pg_num_rows($select_courses_result) > 0) {
+            while($fetch_course = pg_fetch_assoc($select_courses_result)) {
+               $course_id = $fetch_course['course_id'];
+
+               $select_tutor_result = pg_execute($conn, "select_tutor_query1", array($fetch_course['tutor_id']));
+               $fetch_tutor = pg_fetch_assoc($select_tutor_result);
       ?>
       <div class="box">
          <div class="tutor">
-            <img src="uploaded_files/<?= $fetch_tutor['image']; ?>" alt="">
+            <img src="../uploaded_files/<?= $fetch_tutor['image']; ?>" alt="">
             <div>
                <h3><?= $fetch_tutor['name']; ?></h3>
                <span><?= $fetch_course['date']; ?></span>
             </div>
          </div>
-         <img src="uploaded_files/<?= $fetch_course['thumb']; ?>" class="thumb" alt="">
+         <img src="../uploaded_files/<?= $fetch_course['thumbnail']; ?>" class="thumb" alt="">
          <h3 class="title"><?= $fetch_course['title']; ?></h3>
-         <a href="playlist.php?get_id=<?= $course_id; ?>" class="inline-btn">view playlist</a>
+         <a href="course.php?get_id=<?= $course_id; ?>" class="inline-btn">View Course</a>
       </div>
       <?php
          }
       }else{
-         echo '<p class="empty">no courses added yet!</p>';
+         echo '<p class="empty">No courses added yet.</p>';
       }
       ?>
 
