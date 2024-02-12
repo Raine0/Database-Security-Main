@@ -48,11 +48,11 @@ $total_bookmarked = pg_num_rows($select_bookmark_result);
       ?>
       <div class="box">
          <h3 class="title">Likes and Comments</h3>
-         <p>Total Likes : <span><?= $total_likes; ?></span></p>
+         <p>Likes: <span><?= $total_likes; ?></span></p>
          <a href="likes.php" class="inline-btn">view likes</a>
-         <p>Total Comments : <span><?= $total_comments; ?></span></p>
+         <p>Comments: <span><?= $total_comments; ?></span></p>
          <a href="comments.php" class="inline-btn">view comments</a>
-         <p>Saved Playlist : <span><?= $total_bookmarked; ?></span></p>
+         <p>Bookmarked Courses: <span><?= $total_bookmarked; ?></span></p>
          <a href="bookmark.php" class="inline-btn">view bookmarks</a>
       </div>
       <?php
