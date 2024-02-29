@@ -56,7 +56,7 @@ if(isset($_POST['tutor_fetch'])) {
 
 <section class="tutor-profile">
 
-   <h1 class="heading">profile details</h1>
+   <h1 class="heading">Profile Details</h1>
 
    <div class="details">
       <div class="tutor">

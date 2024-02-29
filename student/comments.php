@@ -123,7 +123,7 @@ if(isset($_POST['update_now'])) {
          echo '<p class="empty">No comments added yet</p>';
       }
       ?>
-      </div>
+   </div>
    
 </section>
 

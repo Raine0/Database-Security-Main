@@ -26,7 +26,6 @@
    <h1 class="heading">All Courses</h1>
 
    <div class="box-container">
-
       <?php
          $select_courses = pg_prepare($conn, "select_courses_query", 'SELECT * FROM courses WHERE status = $1 ORDER BY date DESC');
          $select_courses_result = pg_execute($conn, "select_courses_query", array('Active'));
@@ -58,7 +57,6 @@
          echo '<p class="empty">No courses added yet!</p>';
       }
       ?>
-
    </div>
 
 </section>

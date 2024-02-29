@@ -26,7 +26,6 @@ include '../components/user_header.php';
    <h1 class="heading">Bookmarked Courses</h1>
 
    <div class="box-container">
-
       <?php
          $select_bookmark = pg_prepare($conn, "select_bookmark_query", "SELECT * FROM bookmarks WHERE student_id = $1");
          $select_bookmark_result = pg_execute($conn, "select_bookmark_query", array($student_id));
@@ -66,7 +65,6 @@ include '../components/user_header.php';
          echo '<p class="empty">Nothing bookmarked yet</p>';   
       }
       ?>
-
    </div>
 
 </section>
