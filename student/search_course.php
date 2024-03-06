@@ -28,8 +28,20 @@
       <?php
          if(isset($_POST['search_course']) || isset($_POST['search_course_btn'])) {
             $search_course = $_POST['search_course'];
-            $select_courses = pg_prepare($conn, "select_courses_query", "SELECT * FROM courses WHERE title LIKE $1 AND status = $2");
+            // Prepare the SQL query to select courses along with their tutors and categories
+            $select_courses_query = "
+               SELECT courses.*, tutors.name AS tutor_name
+               FROM courses
+               INNER JOIN tutors ON courses.tutor_id = tutors.tutor_id
+               WHERE courses.title LIKE $1
+               AND courses.status = $2
+               OR courses.category LIKE $1
+            ";
+
+            // Prepare and execute the query
+            $select_courses = pg_prepare($conn, "select_courses_query", $select_courses_query);
             $select_courses_result = pg_execute($conn, "select_courses_query", array("%$search_course%", 'Active'));
+
             
             $select_tutor = pg_prepare($conn, "select_tutor_query", "SELECT * FROM tutors WHERE tutor_id = $1");
             if(pg_num_rows($select_courses_result) > 0) {

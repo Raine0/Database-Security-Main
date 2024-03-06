@@ -72,7 +72,10 @@ $total_bookmarked = pg_num_rows($select_bookmark_result);
       <div class="box">
          <h3 class="title">Top Categories</h3>
          <div class="flex">
-            <a href="search_course.php?"><i class="fas fa-code"></i><span>development</span></a>
+            <form action="search_course.php" method="POST">
+               <input type="hidden" name="search_course" value="Development">
+               <button type="submit"><i class="fas fa-code"></i><span>development</span></button>
+            </form>
             <a href="#"><i class="fas fa-chart-simple"></i><span>business</span></a>
             <a href="#"><i class="fas fa-pen"></i><span>design</span></a>
             <a href="#"><i class="fas fa-chart-line"></i><span>marketing</span></a>
